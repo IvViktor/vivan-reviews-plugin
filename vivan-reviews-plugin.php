@@ -52,29 +52,48 @@ function unregister_vivan_reviews_plugin_custom_post_type() {
 register_activation_hook( __FILE__, 'activate_vivan_reviews_plugin' );
 register_deactivation_hook( __FILE__, 'deactivate_vivan_reviews_plugin' );
 
-function vivan_reviews_add_review($post_data){
+/*
+ *function for check neccessary parameters and add new review as a post
+ *use this function with renderer helper function to support informational messages in template file
+ *below is example of renderer helper function 
+function renderer_helper($is_error, $message_text){
+	if ($is_error){
+		$inform_message_class_name = 'error-message';
+		$inform_message_text = $message_text . __('Please try again.');
+	} else {
+		$inform_message_class_name = 'success-message';
+		$inform_message_text = $message_text;
+	}
+}
+ */
+function vivan_reviews_add_review($post_data, $callback){
 	if (!empty($post_data['_vivan-reviews-visitor-review']) && $post_data['_vivan-reviews-visitor-review'] == '_new-review'){
+		if (!vivan_reviews_recatcha_is_valid($post_data)){
+			$callback(true,__('reCAPTCHA challenge is not passed.'));
+			return;
+		}
 		if (isset($post_data['vivan_reviews_visitor_name']) && !empty($post_data['vivan_reviews_visitor_name'])){
 			$visitor_name = $post_data['vivan_reviews_visitor_name'];
-		} else return;
+		} else {
+			$callback(true, __('Name is not specified.'));
+			return;
+		}
 		if (isset($post_data['vivan_reviews_visitor_email']) && !empty($post_data['vivan_reviews_visitor_email'])){
 			if (is_email($post_data['vivan_reviews_visitor_email'])) $visitor_email = $post_data['vivan_reviews_visitor_email'];
-			else return;
-		} else return;
+			else {
+				$callback(true, __('Email address is not valid.'));
+				return;
+			}
+		} else {
+			$callback(true, __('Email address is not specified.'));
+			return;
+		}
 		if (isset($post_data['vivan_reviews_visitor_review']) && !empty($post_data['vivan_reviews_visitor_review'])){
 			$visitor_review = $post_data['vivan_reviews_visitor_review'];
-		} else return;
-		if (isset($post_data['g-recaptcha-response']) && !empty($post_data['g-recaptcha-response'])){
-			$grecaptcha_data = array(
-				'body' => array(
-					'secret' => '6LfJI4kUAAAAAFgZh3RrP64-W8mV1Dpr6CNhrk5J',
-					'response' => $post_data['g-recaptcha-response']
-				)
-			);
-			$grecaptcha_response = wp_remote_retrieve_body(wp_remote_post('https://www.google.com/recaptcha/api/siteverify', $grecaptcha_data));
-			$grecaptcha_response_data = json_decode($grecaptcha_response, true);
-			if ($grecaptcha_response_data['success'] == false) return;
-		} else return;
+		} else {
+			$callback(true, __('Review text is not entered.'));
+			return;
+		}
 		$review_data = array(
 			'post_title' => __("Review by ").$visitor_name ,
 			'post_content' => $visitor_review,
@@ -85,6 +104,29 @@ function vivan_reviews_add_review($post_data){
 				'visitor_email' => $visitor_email
 			)
 		);
-		wp_insert_post($review_data);
+		$review_post_id = wp_insert_post($review_data, true);
+		if (is_wp_error($reviw_post_id){
+			$callback(true, __('Internal server error was found during posting your review.'));
+			return;
+		}
+		$callback(false, __('Your review was successfully added.'));
 	}
 }
+
+//function for check reCAPTHCA user response with Google reCAPTCHA API
+function vivan_reviews_recatcha_is_valid($post_data){
+	if (isset($post_data['g-recaptcha-response']) && !empty($post_data['g-recaptcha-response'])){
+		$grecaptcha_request = array(
+			'body' => array(
+				'secret' => '6LfJI4kUAAAAAFgZh3RrP64-W8mV1Dpr6CNhrk5J',
+				'response' => $post_data['g-recaptcha-response']
+			)
+		);
+		$grecaptcha_response = (wp_remote_post('https://www.google.com/recaptcha/api/siteverify', $grecaptcha_request));
+		if (is_wp_error($grecaptcha_response)) return false;
+		$grecaptcha_response_data = json_decode(wp_remote_retrieve_body($grecaptcha_response), true);
+		return $grecaptcha_response_data['success'];
+	} else return false;
+}
+
+
