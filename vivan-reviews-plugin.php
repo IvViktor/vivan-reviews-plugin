@@ -55,16 +55,6 @@ register_deactivation_hook( __FILE__, 'deactivate_vivan_reviews_plugin' );
 /*
  *function for check neccessary parameters and add new review as a post
  *use this function with renderer helper function to support informational messages in template file
- *below is example of renderer helper function 
-function renderer_helper($is_error, $message_text){
-	if ($is_error){
-		$inform_message_class_name = 'error-message';
-		$inform_message_text = $message_text . __('Please try again.');
-	} else {
-		$inform_message_class_name = 'success-message';
-		$inform_message_text = $message_text;
-	}
-}
  */
 function vivan_reviews_add_review($post_data, $callback){
 	if (!empty($post_data['_vivan-reviews-visitor-review']) && $post_data['_vivan-reviews-visitor-review'] == '_new-review'){
@@ -112,7 +102,18 @@ function vivan_reviews_add_review($post_data, $callback){
 		$callback(false, __('Your review was successfully added.'));
 	}
 }
-
+/*
+ *below is example of renderer helper function
+function renderer_helper($is_error, $message_text){
+	if ($is_error){
+		$inform_message_class_name = 'error-message';
+		$inform_message_text = $message_text . __('Please try again.');
+	} else {
+		$inform_message_class_name = 'success-message';
+		$inform_message_text = $message_text;
+	}
+}
+ */
 //function for check reCAPTHCA user response with Google reCAPTCHA API
 function vivan_reviews_recatcha_is_valid($post_data){
 	if (isset($post_data['g-recaptcha-response']) && !empty($post_data['g-recaptcha-response'])){
