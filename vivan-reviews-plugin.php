@@ -34,9 +34,17 @@ function register_vivan_reviews_plugin_custom_post_type() {
                            'description' => "Отзывы оставленные посетителями сайта",
                            'public'      => true,
                        )
-    );
+	);
 }
 add_action('init','register_vivan_reviews_plugin_custom_post_type');
+
+//adding reCAPTHCA script loader for specifig page template
+add_filter( 'template_include', 'vivan_reviews_add_recaptcha_api', 1000);
+function vivan_reviews_add_recaptcha_api(){
+	if is_page_template(get_template_directory_uri() . '/page-vivan-reviews.php') {
+		wp_enqueue_script('recaptcha_loader', 'https://www.google.com/recaptcha/api.js?hl=ru');
+	}
+}
 /**
  * The code that runs during plugin deactivation.
  */
