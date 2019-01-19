@@ -39,13 +39,13 @@ function register_vivan_reviews_plugin_custom_post_type() {
 add_action('init','register_vivan_reviews_plugin_custom_post_type');
 
 //adding reCAPTHCA script loader for specifig page template
-add_filter( 'template_include', 'vivan_reviews_add_recaptcha_api', 1000);
-function vivan_reviews_add_recaptcha_api($template){
-	if (is_page_template(get_template_directory_uri().'/page-vivan-reviews.php')){
-		wp_enqueue_script('recaptcha_loader', 'https://www.google.com/recaptcha/api.js?hl=ru');
-	}
-	return $template;
-}
+//add_filter( 'template_include', 'vivan_reviews_add_recaptcha_api', 1000);
+//function vivan_reviews_add_recaptcha_api($template){
+//	if (is_page_template(get_template_directory_uri().'/page-vivan-reviews.php')){
+//		wp_enqueue_script('recaptcha_loader', 'https://www.google.com/recaptcha/api.js?hl=ru');
+//	}
+//	return $template;
+//}
 /**
  * The code that runs during plugin deactivation.
  */
@@ -139,4 +139,42 @@ function vivan_reviews_recatcha_is_valid($post_data){
 	} else return false;
 }
 
+//adding meta boxes to post edit screen for vivan_visitor_review post type
+function vivan_reviews_add_post_meta_box(){
+	add_meta_box('vivan_reviews_visitor_name_box', __('Visitor name'), 'vivan_reviews_visitor_name_box_render', 'vivan_visitor_review');
+	add_meta_box('vivan_reviews_visitor_email_box', __('Visitor email address'), 'vivan_reviews_visitor_email_box_render', 'vivan_visitor_review');
+}
+add_action('add_meta_boxes', 'vivan_reviews_add_post_meta_box');
+function vivan_reviews_visitor_name_box_render($post){
+	$value = get_post_meta($post->ID, 'visitor_name', true);
+	?>
+	<label for="vivans_review_visitor_name_postscreen"><?php echo __('Visitor name'); ?></label>
+	<input type="text" name="vivans_review_visitor_name_postscreen" value="<?php echo (isset($value))?$value:''; ?>" />
+	<?php
+}
+function vivan_reviews_visitor_email_box_render($post){
+	$value = get_post_meta($post->ID, 'visitor_email', true);
+	?>
+	<label for="vivans_review_visitor_email_postscreen"><?php echo __('Visitor email'); ?></label>
+	<input type="text" name="vivans_review_visitor_email_postscreen" value="<?php echo (isset($value))?$value:''; ?>" />
+	<?php
+}
 
+//saving meta box values on post saving
+function vivan_reviews_save_postscreen_data($post_id){
+	if (array_key_exists('vivans_review_visitor_name_postscreen', $_POST)) {
+        update_post_meta(
+            $post_id,
+            'visitor_name',
+            $_POST['vivans_review_visitor_name_postscreen']
+        );
+    }
+    if (array_key_exists('vivans_review_visitor_email_postscreen', $_POST)) {
+        update_post_meta(
+            $post_id,
+            'visitor_email',
+            $_POST['vivans_review_visitor_email_postscreen']
+        );
+    }
+}
+add_action('save_post', 'vivan_reviews_save_postscreen_data');
