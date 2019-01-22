@@ -68,33 +68,33 @@ register_deactivation_hook( __FILE__, 'deactivate_vivan_reviews_plugin' );
 function vivan_reviews_add_review($post_data, $callback){
 	if (!empty($post_data['_vivan-reviews-visitor-review']) && $post_data['_vivan-reviews-visitor-review'] == '_new-review'){
 		if (!vivan_reviews_recatcha_is_valid($post_data)){
-			$callback(true,__('reCAPTCHA challenge is not passed.'));
+			$callback(true,__('reCAPTCHA challenge is not passed.', 'vivan-reviews-plugin'));
 			return;
 		}
 		if (isset($post_data['vivan_reviews_visitor_name']) && !empty($post_data['vivan_reviews_visitor_name'])){
 			$visitor_name = $post_data['vivan_reviews_visitor_name'];
 		} else {
-			$callback(true, __('Name is not specified.'));
+			$callback(true, __('Name is not specified.', 'vivan-reviews-plugin'));
 			return;
 		}
 		if (isset($post_data['vivan_reviews_visitor_email']) && !empty($post_data['vivan_reviews_visitor_email'])){
 			if (is_email($post_data['vivan_reviews_visitor_email'])) $visitor_email = $post_data['vivan_reviews_visitor_email'];
 			else {
-				$callback(true, __('Email address is not valid.'));
+				$callback(true, __('Email address is not valid.', 'vivan-reviews-plugin'));
 				return;
 			}
 		} else {
-			$callback(true, __('Email address is not specified.'));
+			$callback(true, __('Email address is not specified.', 'vivan-reviews-plugin'));
 			return;
 		}
 		if (isset($post_data['vivan_reviews_visitor_review']) && !empty($post_data['vivan_reviews_visitor_review'])){
 			$visitor_review = $post_data['vivan_reviews_visitor_review'];
 		} else {
-			$callback(true, __('Review text is not entered.'));
+			$callback(true, __('Review text is not entered.', 'vivan-reviews-plugin'));
 			return;
 		}
 		$review_data = array(
-			'post_title' => __("Review by ").$visitor_name ,
+			'post_title' => __("Review by ", 'vivan-reviews-plugin').$visitor_name ,
 			'post_content' => $visitor_review,
 			'post_type' => 'vivan_visitor_review',
 			'post_status' => 'publish',
@@ -105,10 +105,10 @@ function vivan_reviews_add_review($post_data, $callback){
 		);
 		$review_post_id = wp_insert_post($review_data, true);
 		if (is_wp_error($reviw_post_id)){
-			$callback(true, __('Internal server error was found during posting your review.'));
+			$callback(true, __('Internal server error was found during posting your review.', 'vivan-reviews-plugin'));
 			return;
 		}
-		$callback(false, __('Your review was successfully added.'));
+		$callback(false, __('Your review was successfully added.', 'vivan-reviews-plugin'));
 	}
 }
 /*
@@ -141,21 +141,21 @@ function vivan_reviews_recatcha_is_valid($post_data){
 
 //adding meta boxes to post edit screen for vivan_visitor_review post type
 function vivan_reviews_add_post_meta_box(){
-	add_meta_box('vivan_reviews_visitor_name_box', __('Visitor name'), 'vivan_reviews_visitor_name_box_render', 'vivan_visitor_review');
-	add_meta_box('vivan_reviews_visitor_email_box', __('Visitor email address'), 'vivan_reviews_visitor_email_box_render', 'vivan_visitor_review');
+	add_meta_box('vivan_reviews_visitor_name_box', __('Visitor name', 'vivan-reviews-plugin'), 'vivan_reviews_visitor_name_box_render', 'vivan_visitor_review');
+	add_meta_box('vivan_reviews_visitor_email_box', __('Visitor email address', 'vivan-reviews-plugin'), 'vivan_reviews_visitor_email_box_render', 'vivan_visitor_review');
 }
 add_action('add_meta_boxes', 'vivan_reviews_add_post_meta_box');
 function vivan_reviews_visitor_name_box_render($post){
 	$value = get_post_meta($post->ID, 'visitor_name', true);
 	?>
-	<label for="vivans_review_visitor_name_postscreen"><?php echo __('Visitor name'); ?></label>
+	<label for="vivans_review_visitor_name_postscreen"><?php echo __('Visitor name', 'vivan-reviews-plugin'); ?></label>
 	<input type="text" name="vivans_review_visitor_name_postscreen" value="<?php echo (isset($value))?$value:''; ?>" />
 	<?php
 }
 function vivan_reviews_visitor_email_box_render($post){
 	$value = get_post_meta($post->ID, 'visitor_email', true);
 	?>
-	<label for="vivans_review_visitor_email_postscreen"><?php echo __('Visitor email'); ?></label>
+	<label for="vivans_review_visitor_email_postscreen"><?php echo __('Visitor email', 'vivan-reviews-plugin'); ?></label>
 	<input type="text" name="vivans_review_visitor_email_postscreen" value="<?php echo (isset($value))?$value:''; ?>" />
 	<?php
 }

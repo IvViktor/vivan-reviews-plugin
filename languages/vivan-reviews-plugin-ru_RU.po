@@ -1,0 +1,75 @@
+# Copyright (C) 2019 Viktor Ivanchenko
+# This file is distributed under the same license as the Vivan reviews plugin plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Vivan reviews plugin 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/vivan-reviews-plugin\n"
+"Last-Translator: VIKTOR IVANCHENKO <viittyok1992@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-01-22T10:44:01+02:00\n"
+"PO-Revision-Date: 2019-01-22 10:55+02:00\n"
+"X-Generator: WP-CLI 2.1.0\n"
+"X-Domain: vivan-reviews-plugin\n"
+
+#. Plugin Name of the plugin
+msgid "Vivan reviews plugin"
+msgstr ""
+
+#. Description of the plugin
+msgid "Simple plugin for leaving visitors reviews on your site."
+msgstr "Простой плагин обеспечивает поселителям возможность оставить отзыв на сайте"
+
+#. Author of the plugin
+msgid "Viktor Ivanchenko"
+msgstr "Виктор Иванченко"
+
+#. Author URI of the plugin
+msgid "viittyok1992@gmail.com"
+msgstr "viittyok1992@gmail.com"
+
+#: vivan-reviews-plugin.php:71
+msgid "reCAPTCHA challenge is not passed."
+msgstr "reCAPTHCA не совпадает."
+
+#: vivan-reviews-plugin.php:77
+msgid "Name is not specified."
+msgstr "Не указано имя."
+
+#: vivan-reviews-plugin.php:83
+msgid "Email address is not valid."
+msgstr "Неверный формат адреса электронной почты."
+
+#: vivan-reviews-plugin.php:87
+msgid "Email address is not specified."
+msgstr "Не указан адрес электронной почты."
+
+#: vivan-reviews-plugin.php:93
+msgid "Review text is not entered."
+msgstr "Текс отзыва не указан."
+
+#: vivan-reviews-plugin.php:97
+msgid "Review by "
+msgstr "Отзыв от "
+
+#: vivan-reviews-plugin.php:108
+msgid "Internal server error was found during posting your review."
+msgstr "Во время обработки Вашего отзыва произошла внутренняя ошыбка сервера."
+
+#: vivan-reviews-plugin.php:111
+msgid "Your review was successfully added."
+msgstr "Ваш отзыв был успешно оставлен на сайте."
+
+#: vivan-reviews-plugin.php:144
+#: vivan-reviews-plugin.php:151
+msgid "Visitor name"
+msgstr "Имя посетителя"
+
+#: vivan-reviews-plugin.php:145
+msgid "Visitor email address"
+msgstr "Email адрес посетителя"
+
+#: vivan-reviews-plugin.php:158
+msgid "Visitor email"
+msgstr "Email адрес посетителя"
