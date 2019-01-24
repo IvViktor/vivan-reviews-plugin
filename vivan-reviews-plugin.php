@@ -30,9 +30,17 @@ function activate_vivan_reviews_plugin() {
 function register_vivan_reviews_plugin_custom_post_type() {
 	register_post_type('vivan_visitor_review',
                        array(
-                           'label'       => "Отзывы" ,
+                           'labels'       => array(
+                           		'name' => "Отзывы",
+                           		'menu_name' => "Отзывы %%vivan_reviews_plugin_menu_name%%",
+                           		'all_items' => "Отзывы"
+                           	),
                            'description' => "Отзывы оставленные посетителями сайта",
-                           'public'      => true,
+                           'public'      => false,
+                           'publicly_queryable' => true,
+                           'exclude_from_search' => true,
+                           'show_in_nav_menus' => false,
+                           'show_ui' => true
                        )
 	);
 }
@@ -97,7 +105,7 @@ function vivan_reviews_add_review($post_data, $callback){
 			'post_title' => __("Review by ", 'vivan-reviews-plugin').$visitor_name ,
 			'post_content' => $visitor_review,
 			'post_type' => 'vivan_visitor_review',
-			'post_status' => 'publish',
+			'post_status' => 'pending',
 			'meta_input' => array(
 				'visitor_name' => $visitor_name,
 				'visitor_email' => $visitor_email
@@ -137,6 +145,33 @@ function vivan_reviews_recatcha_is_valid($post_data){
 		$grecaptcha_response_data = json_decode(wp_remote_retrieve_body($grecaptcha_response), true);
 		return $grecaptcha_response_data['success'];
 	} else return false;
+}
+
+//functions to add notification bubble to Reviews custom post type label
+add_action('auth_redirect', 'vivan_reviews_add_pending_count_filter'); // modify esc_attr on auth_redirect
+add_action('admin_menu', 'vivan_reviews_esc_attr_restore'); // restore on admin_menu (very soon)
+
+function vivan_reviews_add_pending_count_filter() {
+  add_filter('attribute_escape', 'vivan_reviews_remove_esc_attr_and_count', 20, 2);
+}
+function vivan_reviews_esc_attr_restore() {
+  remove_filter('attribute_escape', 'vivan_reviews_remove_esc_attr_and_count', 20, 2);
+}
+function vivan_reviews_remove_esc_attr_and_count( $safe_text = '', $text = '' ) {
+  if ( substr_count($text, '%%vivan_reviews_plugin_menu_name%%') ) {
+    $text = trim( str_replace('%%vivan_reviews_plugin_menu_name%%', '', $text) );
+    // run only once!
+    vivan_reviews_esc_attr_restore();
+    $safe_text = esc_attr($text);
+    // remember to set the right cpt name below
+    $count = (int)wp_count_posts('vivan_visitor_review')->pending;
+    if ( $count > 0 ) {
+      // we have pending, add the count
+      $text = esc_attr($text) . '<span class="awaiting-mod count-' . $count . '"><span class="pending-count">' . $count . '</span></span>';
+      return $text;
+    } 
+  }
+  return $safe_text;
 }
 
 //adding meta boxes to post edit screen for vivan_visitor_review post type
